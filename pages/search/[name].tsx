@@ -1,12 +1,14 @@
-import React from "react";
-import { Box, Flex, Heading, Input, Text } from "@chakra-ui/react";
+import { Flex, Heading, Input, Text } from "@chakra-ui/react";
 import { GetServerSidePropsContext } from "next";
+import Image from "next/image";
+import { useRouter } from "next/router";
+import React from "react";
+import { useState } from "react";
+import { IoIosArrowRoundBack } from "react-icons/io";
+import { useVirtual } from "react-virtual";
+
 import ListItem from "../../components/ListItem";
 import importIngredients from "../../core/importIngredients";
-import { useState } from "react";
-import { useRouter } from "next/router";
-import Image from "next/image";
-import { IoIosArrowRoundBack } from "react-icons/io";
 
 export interface IDrink {
   strDrink: string;
@@ -22,6 +24,14 @@ interface ISearchProps {
 }
 
 const Search = ({ drinks, context }: ISearchProps) => {
+  const parentRef = React.useRef<HTMLDivElement>(null);
+
+  const rowVirtualizer = useVirtual({
+    size: drinks ? drinks.length : 0,
+    parentRef,
+    estimateSize: React.useCallback(() => 200, []),
+    overscan: 5,
+  });
   const router = useRouter();
   const [value, setValue] = useState<string>("");
   function handleChange(event: React.ChangeEvent) {
@@ -52,13 +62,45 @@ const Search = ({ drinks, context }: ISearchProps) => {
         placeholder="Something more?"
       />
       {drinks ? (
-        drinks.map((e, i) => {
-          return (
-            <Box key={i}>
-              <ListItem drinkData={importIngredients(e)} drink={e} />
-            </Box>
-          );
-        })
+        <>
+          <div
+            ref={parentRef}
+            className="List"
+            style={{
+              height: `80vh`,
+              width: `400px`,
+              overflow: "auto",
+            }}
+          >
+            <div
+              style={{
+                height: `${rowVirtualizer.totalSize}px`,
+                width: "100%",
+                position: "relative",
+                marginTop: "25px",
+              }}
+            >
+              {rowVirtualizer.virtualItems.map((virtualRow) => (
+                <div
+                  key={virtualRow.index}
+                  style={{
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    width: "100%",
+                    height: `${virtualRow.size}px`,
+                    transform: `translateY(${virtualRow.start}px)`,
+                  }}
+                >
+                  <ListItem
+                    drinkData={importIngredients(drinks[virtualRow.index])}
+                    drink={drinks[virtualRow.index]}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        </>
       ) : (
         <>
           <Text my={3}>Nothing found {":("} Something else ?</Text>

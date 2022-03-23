@@ -1,11 +1,17 @@
-import React, { KeyboardEventHandler, useState } from "react";
-import { Box, Button, Flex, Heading, Input } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Center,
+  Flex,
+  Heading,
+  Input,
+  Link,
+  Text,
+} from "@chakra-ui/react";
 import type { NextPage } from "next";
-import Head from "next/head";
 import Image from "next/image";
-import styles from "../styles/Home.module.css";
 import { useRouter } from "next/router";
-
+import React, { useState } from "react";
 const Home: NextPage = () => {
   const [value, setValue] = useState<string>("");
   function handleChange(event: React.ChangeEvent) {
@@ -30,15 +36,22 @@ const Home: NextPage = () => {
           </Heading>
           <Image src="/cocktail.png" height={30} width={30} alt="Cocktail" />
         </Flex>
-        <Input
-          onChange={handleChange}
-          onKeyDown={handleEnter}
-          value={value}
-          placeholder="What's drink today?"
-          my={3}
-        />
-        <Flex justifyContent="center" my={3}>
+        <Text textAlign="center" textColor="gray.500">
+          Search engine for alco / non-alco drinks with recipes
+        </Text>
+        <Center>
+          <Input
+            width="80%"
+            onChange={handleChange}
+            onKeyDown={handleEnter}
+            value={value}
+            placeholder="What's drink today?"
+            my={3}
+          />
+        </Center>
+        <Flex justifyContent="center" alignItems="center" my={3}>
           <Button
+            fontWeight="light"
             onClick={() => {
               router.push(`/search/${value}`);
             }}
@@ -46,9 +59,20 @@ const Home: NextPage = () => {
           >
             Search
           </Button>
-          <Button mx={3} colorScheme="orange">
+          <Link
+            borderWidth="2px"
+            borderColor="orange.500"
+            textColor="orange.500"
+            py={1.5}
+            px={6}
+            _hover={{ backgroundColor: "orange.500", textColor: "white" }}
+            rounded="md"
+            href="https://github.com/denissugaipov/cocktaildb"
+            mx={3}
+            colorScheme="orange"
+          >
             Github
-          </Button>
+          </Link>
         </Flex>
       </Box>
     </Flex>
